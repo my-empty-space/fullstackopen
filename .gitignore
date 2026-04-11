@@ -10,6 +10,7 @@ trash
 logs
 **/*.backup.*
 **/*.back.*
+.vite
 
 node_modules
 bower_components
