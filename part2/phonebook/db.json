@@ -1,0 +1,25 @@
+{
+  "persons": [
+    {
+      "name": "ads",
+      "number": "0412-6458798",
+      "id": "KZC83QkAQNM"
+    },
+    {
+      "name": "Jose Manuel",
+      "number": "04246316226",
+      "id": "bzGsFtJL-uM"
+    },
+    {
+      "name": "Elias Eduardo",
+      "number": "0261-7655044",
+      "id": "GYEZjAJ0R6M"
+    },
+    {
+      "name": "Luis Manuel",
+      "number": "042461616413",
+      "id": "1XYvwRvnlCc"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
