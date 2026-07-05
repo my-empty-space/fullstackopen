@@ -16,6 +16,12 @@ const getPersons = async () => {
 
 let persons = await getPersons();
 
+function generateId() {
+    return Math.floor(Math.random() * 99999999);
+}
+
+app.use(express.json())
+
 app.get("/", (req, res) => {
     res.send("<h1>Welcome to phonebook's API</h1> <p>Access to <a href='/api/persons'>/api/persons</a> to get all notes.</p>")
 })
@@ -48,6 +54,20 @@ app.delete("/api/persons/:id", (req, res) => {
 
     persons = filteredPersons;
     res.status(204).end();
+})
+
+app.post("/api/persons", (req, res) => {
+    const body = req.body;
+
+    if (!body.name || !body.number) return res.status(400).end();
+    const newPerson = {
+        id: generateId(),
+        name: body.name,
+        number: body.number
+    }
+
+    persons = persons.concat(newPerson);
+    res.json(newPerson);
 })
 
 app.get("/api/info", (req, res) => {
