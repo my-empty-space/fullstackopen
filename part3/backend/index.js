@@ -21,7 +21,6 @@ app.get("/", (req, res) => {
 })
 
 app.get("/api/persons", (req, res) => {
-    console.log(persons);
     res.json(persons);
 });
 
@@ -37,13 +36,17 @@ app.get("/api/persons/:id", (req, res) => {
 app.delete("/api/persons/:id", (req, res) => {
     const id = Number(req.params.id);
 
-    persons = persons.reduce((acc, curr) => {
-        if (curr.id === id) return acc;
-        return curr;
-    }
-        , []);
+    const filteredPersons = persons.filter((e) => e.id !== id)
+    if (filteredPersons.length === persons.length) return res.status(404).end();
 
-    console.log(persons);
+    // Opcion con splice, esta me parece peor pues tene un O mayor.
+    // const deletionIndex = persons.findIndex((e) => e.id === id)
+    // if (deletionIndex < 0) return  res.status(404).end();
+
+    // persons = persons.spice()
+
+
+    persons = filteredPersons;
     res.status(204).end();
 })
 
