@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import fs from "fs/promises";
+import cors from "cors";
 
 const app = express();
 const PORT = 3001;
@@ -22,11 +23,11 @@ function generateId() {
 }
 
 app.use(express.json());
+app.use(cors());
+
 morgan.token("body", function (req, res) {
   return JSON.stringify(req.body);
 });
-
-app.use(morgan(":method :url :status - :response-time ms :body"));
 
 app.get("/", (req, res) => {
   res.send(
