@@ -8,15 +8,12 @@
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:ui": "rm -rf ./dist && cd ../frontend && npm run build && cp -r dist ../backend/",
-    "deploy": "fly deploy",
-    "deploy:full": "npm run build:ui && npm run deploy"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "devDependencies": {
-    "@flydotio/dockerfile": "^0.7.10",
     "nodemon": "^1.14.10"
   },
   "dependencies": {
