@@ -2,33 +2,24 @@ import express from "express";
 import morgan from "morgan";
 import fs from "fs/promises";
 import cors from "cors";
+import Person from './models/Person.js'
 
 const app = express();
 const PORT = 3001;
-
-const getPersons = async () => {
-  try {
-    const data = await fs.readFile("./db.json", "utf8");
-    return JSON.parse(data);
-  } catch (error) {
-    console.error("Error reading or parsing db.json:", error);
-    throw error;
-  }
-};
-
-let persons = await getPersons();
-
-function generateId() {
-  return Math.floor(Math.random() * 99999999);
-}
 
 app.use(express.json());
 app.use(cors());
 app.use(express.static("dist"));
 
-morgan.token("body", function (req, res) {
-  return JSON.stringify(req.body);
-});
+morgan.token("body", (req) => (
+  req.method === "POST"
+    ? JSON.stringify(req.body)
+    : ""
+));
+
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :body")
+);
 
 app.get("/", (req, res) => {
   res.send(
@@ -36,14 +27,15 @@ app.get("/", (req, res) => {
   );
 });
 
-app.get("/api/persons", (req, res) => {
+app.get("/api/persons", async (req, res) => {
+  const persons = await Person.find({});
   res.json(persons);
 });
 
-app.get("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
+app.get("/api/persons/:id", async (req, res) => {
+  const id = req.params.id;
 
-  const person = persons.find((e) => e.id === id);
+  const person = await Person.findById(id);
   if (!person)
     return res.status(404).send("<h1>404 - Person has not found</h1>");
 
@@ -67,33 +59,48 @@ app.delete("/api/persons/:id", (req, res) => {
   res.status(204).end();
 });
 
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", async (req, res) => {
   const body = req.body;
 
-  if (!body.name || !body.number)
+  if (!body.name || !body.number) {
     return res.status(400).json({ error: "Missing name or number" });
-
-  if (persons.some((person) => person.name === body.name)) {
-    return res.status(400).json({ error: "Name must be unique" });
   }
 
-  const newPerson = {
-    id: generateId(),
+  Person.create({
     name: body.name,
     number: body.number,
-  };
+  })
+    .then(newPerson => (
+      res.json(newPerson)
+    ))
+    .catch(error => {
+      const { errorResponse } = error;
 
-  persons = persons.concat(newPerson);
-  res.json(newPerson);
+      if (errorResponse.code === 11000) {
+        console.error(errorResponse.errmsg);
+        return res.status(400).json({ error: "Name must be unique" });
+      }
+
+      console.error(errorResponse);
+      return res.status(500).json({ error: "Something went wrong" });
+    });
+
 });
 
-app.get("/api/info", (req, res) => {
-  const time = new Date();
-  res.send(`
+app.get(["/info", "/api/info"], async (req, res) => {
+  try {
+    const time = new Date();
+    const totalPersons = await Person.countDocuments({});
+
+    res.send(`
         <h1>Information</h1>
-        <p>Phonebook has information of ${persons.length} people</p>
+        <p>Phonebook has information of ${totalPersons} people</p>
         <p>${time}</p>
     `);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error.message });
+  }
 });
 
 app.listen(PORT, () => {
