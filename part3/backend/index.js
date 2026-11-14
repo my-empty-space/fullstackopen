@@ -83,6 +83,24 @@ app.post("/api/persons", async (req, res, next) => {
   }
 });
 
+app.put("/api/persons/:id", async (req, res, next) => {
+  const id = req.params.id;
+  const body = req.body;
+
+  if (!body.name || !body.number) {
+    return res.status(400).json({ error: "Missing name or number" });
+  }
+
+  try {
+    const updatedPerson = await Person.findByIdAndUpdate(id, body, { returnDocument: "after" });
+    if (!updatedPerson) return res.status(404).json({ error: "there is no person to update" })
+    res.json(updatedPerson);
+  }
+  catch (error) {
+    next(error);
+  }
+});
+
 app.get(["/info", "/api/info"], async (req, res, next) => {
   try {
     const time = new Date();
