@@ -116,10 +116,10 @@ const App = () => {
     if (window.confirm(`Delete ${persons.find((e) => e.id === id).name}?`)) {
       personServices
         .deleteOne(id.toString())
-        .then((deletedItem) => {
-          setPersons(persons.filter((e) => e.id !== deletedItem.id));
+        .then((deletedItemId) => {
+          setPersons(persons.filter((e) => e.id !== deletedItemId));
           setPersonsToShow(
-            personsToShow.filter((e) => e.id !== deletedItem.id),
+            personsToShow.filter((e) => e.id !== deletedItemId),
           );
         })
         .catch((error) => {

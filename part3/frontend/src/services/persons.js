@@ -18,7 +18,7 @@ const update = (id, updatedPerson) => {
 
 const deleteOne = (id) => {
   const req = axios.delete(`${API}/${id}`);
-  return req.then((res) => res.data);
+  return req.then((res) => id);
 };
 
 export default { getAll, create, update, deleteOne };

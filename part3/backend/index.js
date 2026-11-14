@@ -42,21 +42,20 @@ app.get("/api/persons/:id", async (req, res) => {
   res.json(person);
 });
 
-app.delete("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
+app.delete("/api/persons/:id", async (req, res) => {
+  const id = req.params.id;
 
-  const filteredPersons = persons.filter((e) => e.id !== id);
-  if (filteredPersons.length === persons.length) {
-    return res.status(404).json({ error: "Person has not found" });
+  try {
+    const deletedPerson = await Person.findByIdAndDelete(id);
+    console.log(deletedPerson);
+
+    if (!deletedPerson) return res.status(404).json({ message: "there is no person to delete with id: ", id });
+    return res.status(204).send();
   }
-  // Opcion con splice, esta me parece peor pues tene un O mayor.
-  // const deletionIndex = persons.findIndex((e) => e.id === id)
-  // if (deletionIndex < 0) return  res.status(404).end();
-
-  // persons = persons.spice()
-
-  persons = filteredPersons;
-  res.status(204).end();
+  catch (error) {
+    console.error(error);
+    res.status(500).end();
+  }
 });
 
 app.post("/api/persons", async (req, res) => {
