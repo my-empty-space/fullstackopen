@@ -27,22 +27,30 @@ app.get("/", (req, res) => {
   );
 });
 
-app.get("/api/persons", async (req, res) => {
-  const persons = await Person.find({});
-  res.json(persons);
+app.get("/api/persons", async (req, res, next) => {
+  try {
+    const persons = await Person.find({});
+    res.json(persons);
+  } catch (error) {
+    next(error);
+  }
 });
 
-app.get("/api/persons/:id", async (req, res) => {
+app.get("/api/persons/:id", async (req, res, next) => {
   const id = req.params.id;
 
-  const person = await Person.findById(id);
-  if (!person)
-    return res.status(404).send("<h1>404 - Person has not found</h1>");
+  try {
+    const person = await Person.findById(id);
+    if (!person)
+      return res.status(404).send("<h1>404 - Person has not found</h1>");
 
-  res.json(person);
+    res.json(person);
+  } catch (error) {
+    next(error);
+  }
 });
 
-app.delete("/api/persons/:id", async (req, res) => {
+app.delete("/api/persons/:id", async (req, res, next) => {
   const id = req.params.id;
 
   try {
@@ -53,40 +61,29 @@ app.delete("/api/persons/:id", async (req, res) => {
     return res.status(204).send();
   }
   catch (error) {
-    console.error(error);
-    res.status(500).end();
+    next(error);
   }
 });
 
-app.post("/api/persons", async (req, res) => {
+app.post("/api/persons", async (req, res, next) => {
   const body = req.body;
 
   if (!body.name || !body.number) {
     return res.status(400).json({ error: "Missing name or number" });
   }
 
-  Person.create({
-    name: body.name,
-    number: body.number,
-  })
-    .then(newPerson => (
-      res.json(newPerson)
-    ))
-    .catch(error => {
-      const { errorResponse } = error;
-
-      if (errorResponse.code === 11000) {
-        console.error(errorResponse.errmsg);
-        return res.status(400).json({ error: "Name must be unique" });
-      }
-
-      console.error(errorResponse);
-      return res.status(500).json({ error: "Something went wrong" });
+  try {
+    const newPerson = await Person.create({
+      name: body.name,
+      number: body.number,
     });
-
+    res.json(newPerson);
+  } catch (error) {
+    next(error);
+  }
 });
 
-app.get(["/info", "/api/info"], async (req, res) => {
+app.get(["/info", "/api/info"], async (req, res, next) => {
   try {
     const time = new Date();
     const totalPersons = await Person.countDocuments({});
@@ -97,10 +94,25 @@ app.get(["/info", "/api/info"], async (req, res) => {
         <p>${time}</p>
     `);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 });
+
+const errorHandlerMiddleware = (error, req, res, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return res.status(400).json({ error: "malformatted id" });
+  }
+
+  if (error.code === 11000) {
+    return res.status(400).json({ error: "Name must be unique" });
+  }
+
+  next(error);
+};
+
+app.use(errorHandlerMiddleware);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
