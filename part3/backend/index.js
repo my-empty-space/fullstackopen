@@ -4,6 +4,8 @@ import fs from "fs/promises";
 import cors from "cors";
 import Person from './models/Person.js'
 
+console.log(process.env.PAR)
+
 const app = express();
 const PORT = 3001;
 
