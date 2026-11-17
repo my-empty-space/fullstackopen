@@ -9,7 +9,7 @@ import ToastNotification from "./components/ToastNotification";
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("Elias Eduardo");
-  const [newNumber, setNewNumber] = useState("0261-7655044");
+  const [newNumber, setNewNumber] = useState("02-7655044");
   const [filterByName, setFilterByName] = useState("");
   const [personsToShow, setPersonsToShow] = useState([]);
   const [toastData, setToastData] = useState({});
@@ -84,12 +84,12 @@ const App = () => {
             setPersonsToShow(newArr);
           })
           .catch((error) => {
+            const message = error.response?.data?.error
+              || `Information of ${objNewPerson.name} has already been removed from server`;
             setToastData({
-              message: `Information of ${objNewPerson.name} was deleted`,
+              message: message,
               status: "error",
             });
-            setTimeout(() => setToastData({}), 4000);
-            console.error(error);
           });
       }
 

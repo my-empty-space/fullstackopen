@@ -9,7 +9,7 @@ const PersonForm = ({ newName, setNewName, newNumber, setNewNumber, handleSubmit
       <br />
       <label>
         number:
-        <input type="tel" value={newNumber} onChange={(event) => setNewNumber(event.target.value)} />
+        <input type="tel" value={newNumber} onChange={(event) => setNewNumber(event.target.value)} placeholder="00-0000000" />
       </label>
 
       <div>

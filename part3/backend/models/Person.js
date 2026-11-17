@@ -20,6 +20,10 @@ const personSchema = new Schema({
   number: {
     type: String,
     required: true,
+    validate: {
+      validator: number => /^\d{2}-\d{2,15}$/.test(number),
+      message: props => `${props.value} is not a valid phone number`
+    }
   },
 });
 personSchema.set('toObject', {
