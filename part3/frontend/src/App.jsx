@@ -98,18 +98,28 @@ const App = () => {
     }
 
     // Comportamiento por defecto.
-    personServices.create(objNewPerson).then((newItem) => {
-      setToastData({
-        message: `Added: ${objNewPerson.name}`,
-        status: "success",
+    personServices.create(objNewPerson)
+      .then((newItem) => {
+        setToastData({
+          message: `Added: ${objNewPerson.name}`,
+          status: "success",
+        });
+        setTimeout(() => setToastData({}), 2000);
+
+        setPersons(persons.concat(newItem));
+        setPersonsToShow(persons.concat(newItem));
+
+        clearInputs();
+      })
+      .catch(error => {
+        const message = error.response?.data?.error
+          || `Information of ${objNewPerson.name} has already been removed from server`;
+        setToastData({
+          message: message,
+          status: "error",
+        });
+        setTimeout(() => setToastData({}), 4000);
       });
-      setTimeout(() => setToastData({}), 2000);
-
-      setPersons(persons.concat(newItem));
-      setPersonsToShow(persons.concat(newItem));
-
-      clearInputs();
-    });
   };
 
   const handleDelete = (id) => {

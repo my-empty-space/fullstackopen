@@ -94,7 +94,10 @@ app.put("/api/persons/:id", async (req, res, next) => {
   }
 
   try {
-    const updatedPerson = await Person.findByIdAndUpdate(id, body, { returnDocument: "after" });
+    const updatedPerson = await Person.findByIdAndUpdate(id, body, {
+      returnDocument: "after",
+      runValidators: true
+    });
     if (!updatedPerson) return res.status(404).json({ error: "there is no person to update" })
     res.json(updatedPerson);
   }
@@ -119,7 +122,7 @@ app.get(["/info", "/api/info"], async (req, res, next) => {
 });
 
 const errorHandlerMiddleware = (error, req, res, next) => {
-  console.error(error.message);
+  console.error("\n\n\n\n\n\n Aquiii: \n", error, "\n\n\n\n\n\n Aquiii: \n",);
 
   if (error.name === "CastError") {
     return res.status(400).json({ error: "malformatted id" });
@@ -127,6 +130,10 @@ const errorHandlerMiddleware = (error, req, res, next) => {
 
   if (error.code === 11000) {
     return res.status(400).json({ error: "Name must be unique" });
+  }
+
+  if (error.name === "ValidationError") {
+    return res.status(404).json({ error: `${error}` });
   }
 
   next(error);

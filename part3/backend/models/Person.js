@@ -15,6 +15,7 @@ const personSchema = new Schema({
     type: String,
     required: true,
     unique: true,
+    minLength: 3
   },
   number: {
     type: String,
