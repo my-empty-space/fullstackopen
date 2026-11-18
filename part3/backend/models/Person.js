@@ -1,14 +1,14 @@
-import mongoose from "mongoose";
-import { Schema } from "mongoose";
+import mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
-console.log("Connecting to Data Base...");
+console.log('Connecting to Data Base...');
 mongoose.connect(process.env.MONGODB_URI)
-  .then(result => {
-    console.log('connected to MongoDB')
+  .then(() => {
+    console.log('connected to MongoDB');
   })
   .catch(error => {
-    console.log('error connecting to MongoDB:', error.message)
-  })
+    console.log('error connecting to MongoDB:', error.message);
+  });
 
 const personSchema = new Schema({
   name: {
@@ -28,17 +28,17 @@ const personSchema = new Schema({
 });
 personSchema.set('toObject', {
   transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
     // delete returnedObject.__v
   }
-})
+});
 personSchema.set('toJSON', {
   transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
   }
-})
+});
 
-export default mongoose.model("Person", personSchema);
+export default mongoose.model('Person', personSchema);

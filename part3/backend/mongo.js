@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import { Schema } from "mongoose";
+import mongoose from 'mongoose';
+import { Schema } from 'mongoose';
 
 if (process.argv.length === 3) {
   const DB_PASSWORD = process.argv[2];
@@ -11,7 +11,7 @@ if (process.argv.length === 3) {
   process.exit();
 } else if (process.argv.length !== 5) {
   console.error(
-    "------------------------------------\nERROR: los argumentos enviados no son validos.\n------------------------------------\nSe esperaban los siguientes argumentos:\n1. Contrasena  2. Usuario 3. Numero de telefono",
+    '------------------------------------\nERROR: los argumentos enviados no son validos.\n------------------------------------\nSe esperaban los siguientes argumentos:\n1. Contrasena  2. Usuario 3. Numero de telefono',
   );
 
   process.exit();
@@ -36,7 +36,7 @@ const personSchema = new Schema({
   },
 });
 
-const Person = mongoose.model("Person", personSchema);
+const Person = mongoose.model('Person', personSchema);
 
 Person.create({
   name: USER_NAME,
